@@ -2,7 +2,7 @@
 
 Send photos from an iPhone's **Photos → Share → NearDrop** straight to an Ubuntu PC on the same local network. The iPhone app and Share extension are Swift; the receiver is Go. No cloud server is involved.
 
-**Status:** the Go receiver is built and tested on Ubuntu. The Swift app and Xcode project are implemented, but an Xcode build and real iPhone test are still required. Do not treat the iPhone implementation as device-verified until the checks in [docs/TESTING.md](docs/TESTING.md) pass.
+**Status:** the Go receiver is built and tested on Ubuntu. The Swift app and Share extension compile with Xcode 26.6 on GitHub's macOS runner, and the iPhone device IPA has been built. Simulator runtime checks and real iPhone installation/transfer tests remain pending. See [docs/TESTING.md](docs/TESTING.md).
 
 ## Start on the PC
 
@@ -104,6 +104,6 @@ xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop \
   CODE_SIGNING_ALLOWED=NO build
 ```
 
-Run the Swift tests with Product → Test in Xcode using an iPhone Simulator. CI definitions are included but have not been run from this workspace. The project generator uses only Python's standard library; regenerate after adding Swift source files. Configuration and signing details can go in gitignored `ios/Local.xcconfig`.
+Run the Swift tests with Product → Test in Xcode using an iPhone Simulator, or use the manual GitHub cloud workflow. The project generator uses only Python's standard library; regenerate after adding Swift source files. Configuration and signing details can go in gitignored `ios/Local.xcconfig`.
 
 See [protocol and security](docs/PROTOCOL.md) and [device acceptance tests](docs/TESTING.md).

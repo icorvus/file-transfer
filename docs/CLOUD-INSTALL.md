@@ -6,7 +6,7 @@ This route does not use a MacBook or require paid Apple Developer membership. Co
 
 In the public [icorvus/file-transfer repository](https://github.com/icorvus/file-transfer), choose Actions → Cloud build → Run workflow. The workflow is manual so ordinary commits don't launch unrequested jobs. It validates the Go receiver, compiles the Swift app and Share extension, runs Swift tests on an iPhone simulator, and builds a device IPA.
 
-Download the `NearDrop-iPhone-unsigned` artifact after the workflow succeeds. Extract `NearDrop-unsigned.ipa`. The IPA includes an ad-hoc signature solely to preserve entitlement metadata; it is **not yet installable** until iloader signs it with your Apple account.
+Download the `NearDrop-iPhone-unsigned` artifact after the `iphone-device` job succeeds. This job is independent of the simulator tests; downloading the IPA does not mean those tests passed. Extract `NearDrop-unsigned.ipa`. The IPA includes an ad-hoc signature solely to preserve entitlement metadata; it is **not yet installable** until iloader signs it with your Apple account.
 
 Public repositories can use GitHub's standard hosted runners for free. Do not switch this workflow to a paid larger runner. Artifacts expire after three days; download the IPA promptly or run a new build later.
 

@@ -6,10 +6,16 @@ The Go tests exercise actual server behavior: persistent pairing and identity, s
 
 Run `make test`. Linux cannot build UIKit/SwiftUI or run an iPhone simulator. An Xcode project parser and plist validation are useful structural checks, not a replacement for compilation.
 
-## Required Mac and iPhone checks (pending)
+## Cloud build evidence
+
+The [cloud run for commit 97bb7d6](https://github.com/icorvus/file-transfer/actions/runs/38590366758) successfully built the iPhone app and Share extension with Xcode 26.6 for both Simulator and device. Its device artifact includes the main app and `NearDropShare.appex`, targeting iOS 26. The downloaded IPA has SHA-256 `9e0885043cb390719bab13229dac0d9f4a6500c64a37375801edb1819c8fcac1` and requires local Apple signing. The same run passed Go race tests and vet. Simulator test execution and screenshots are still pending; compilation alone does not prove either.
+
+The installed Ubuntu user service was verified active, using `~/Pictures/NearDrop`, and its Bonjour advertisement was resolved from the LAN. The control page was inspected in a real browser at desktop and narrow widths, including QR generation, with no horizontal overflow at the narrow size.
+
+## Required runtime and iPhone checks (pending)
 
 1. Build the NearDrop scheme in Xcode 26+ for iOS Simulator. Confirm both the app and NearDropShare build with Swift 6 checks enabled. Run Product → Test; pairing URL and streaming checksum tests must pass.
-2. Choose the same signing team for both targets, install on the iOS 26 iPhone, and open NearDrop. Scan a fresh code from the PC. Allow local network access. Confirm a successful check connection.
+2. Install the cloud IPA with iloader, keeping its Share extension (or choose the same signing team for both targets with Xcode). Open NearDrop on the iOS 26 iPhone. Scan a fresh code from the PC. Allow local network access. Confirm a successful check connection.
 3. Select one HEIC photo in Photos. Share → NearDrop. Confirm the sheet reports saved and a file appears in `~/Pictures/NearDrop`. Compare the receipt SHA-256 with `sha256sum` on the PC if needed.
 4. Send JPEG, PNG, a screenshot, a video, and a mixed batch. Confirm file counts, supplied filenames, rotation, embedded EXIF, and visual quality. Use a small batch first, then 50–100 photos. The app should not decompress full-resolution images in memory.
 5. Send two different files with the same name. Both must survive. Disconnect Wi-Fi during a transfer, reconnect, then tap Retry within the same sheet. Confirm completed files are not duplicated.
