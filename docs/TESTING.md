@@ -12,6 +12,8 @@ The [cloud run for commit 97bb7d6](https://github.com/icorvus/file-transfer/acti
 
 Native screenshots were captured and inspected in light appearance and dark appearance with accessibility extra-large text. They revealed Keychain error -34018 because simulator code signing had been disabled. CI now uses a local ad-hoc simulator signature and includes a real Keychain save/load/remove test; its result remains pending. Device IPAs still require local Apple signing with iloader. The first simulator boot took 7 minutes 38 seconds, mainly data migration, so its separate boot timeout allows 15 minutes.
 
+The [device job for commit 60ce779](https://github.com/icorvus/file-transfer/actions/runs/38592712222/job/115951494530) also succeeded. This build fixes temporary-file cleanup when cancelling a failed share. Its IPA has SHA-256 `6797b5d894da4a04d747a96260eb5fcced4a60c0f6f4d207bd885048ba7afbf9`; the local `bin/cloud/NearDrop-unsigned.ipa` was updated to this build. The remaining unsigned simulator job in that run was cancelled after the signing issue was identified; its outcome is not a test pass.
+
 The installed Ubuntu user service was verified active, using `~/Pictures/NearDrop`, and its Bonjour advertisement was resolved from the LAN. The control page was inspected in a real browser at desktop and narrow widths, including QR generation, with no horizontal overflow at the narrow size.
 
 ## Required runtime and iPhone checks (pending)
