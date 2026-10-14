@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 concurrency:
   group: neardrop-cloud-build
-  cancel-in-progress: true
+  cancel-in-progress: false
 permissions:
   contents: read
 jobs:
@@ -32,15 +32,21 @@ jobs:
       - run: xcodebuild -version
       - name: Build iPhone app and Share extension
         run: xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/simulator CODE_SIGNING_ALLOWED=NO build
-      - name: Run Swift tests
+      - name: Boot iPhone simulator
+        id: simulator
+        timeout-minutes: 5
         shell: bash
         run: |
           device=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(x["udid"] for runtime,items in d["devices"].items() if "iOS-26" in runtime for x in items if "iPhone" in x["name"]))')
           echo "NEARDROP_SIMULATOR_UDID=$device" >> "$GITHUB_ENV"
           xcrun simctl boot "$device" || true
           xcrun simctl bootstatus "$device" -b
-          xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -destination "platform=iOS Simulator,id=$device" -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -derivedDataPath build/simulator -resultBundlePath build/TestResults.xcresult CODE_SIGNING_ALLOWED=NO test
+      - name: Run Swift tests
+        timeout-minutes: 8
+        run: xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -destination "platform=iOS Simulator,id=$NEARDROP_SIMULATOR_UDID" -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -derivedDataPath build/simulator -resultBundlePath build/TestResults.xcresult CODE_SIGNING_ALLOWED=NO test
       - name: Capture native iPhone screens
+        if: always() && steps.simulator.outcome == 'success'
+        timeout-minutes: 3
         run: |
           mkdir -p build/screenshots
           xcrun simctl boot "$NEARDROP_SIMULATOR_UDID" || true
@@ -55,9 +61,11 @@ jobs:
           sleep 2
           xcrun simctl io "$NEARDROP_SIMULATOR_UDID" screenshot build/screenshots/iphone-dark-large-text.png
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: iPhone-screenshots
           path: build/screenshots
+          if-no-files-found: ignore
           retention-days: 3
       - name: Keep test results
         if: always()

@@ -117,7 +117,18 @@ import UniformTypeIdentifiers
         detail = "\(sent) of \(total) saved. Keep your PC awake and both devices on the same network."
     }
 
-    func cancel() { operation?.cancel(); discovery.stop() }
+    func cancel() {
+        discovery.stop()
+        if let operation {
+            // The running task may still be staging or reading this file.
+            // Its defer removes the directory after cancellation unwinds.
+            operation.cancel()
+        } else {
+            // Failed transfers retain a staged file for Retry. If the user
+            // closes the sheet instead, there is no running task to clean it.
+            cleanup()
+        }
+    }
     func cleanup() {
         if let directory { try? FileManager.default.removeItem(at: directory) }
         directory = nil
