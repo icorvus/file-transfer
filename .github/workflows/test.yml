@@ -37,7 +37,9 @@ jobs:
         run: |
           device=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(x["udid"] for runtime,items in d["devices"].items() if "iOS-26" in runtime for x in items if "iPhone" in x["name"]))')
           echo "NEARDROP_SIMULATOR_UDID=$device" >> "$GITHUB_ENV"
-          xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -destination "platform=iOS Simulator,id=$device" -derivedDataPath build/simulator -resultBundlePath build/TestResults.xcresult CODE_SIGNING_ALLOWED=NO test
+          xcrun simctl boot "$device" || true
+          xcrun simctl bootstatus "$device" -b
+          xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -destination "platform=iOS Simulator,id=$device" -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -derivedDataPath build/simulator -resultBundlePath build/TestResults.xcresult CODE_SIGNING_ALLOWED=NO test
       - name: Capture native iPhone screens
         run: |
           mkdir -p build/screenshots
@@ -52,15 +54,6 @@ jobs:
           xcrun simctl ui "$NEARDROP_SIMULATOR_UDID" content_size accessibility-extra-large
           sleep 2
           xcrun simctl io "$NEARDROP_SIMULATOR_UDID" screenshot build/screenshots/iphone-dark-large-text.png
-      - name: Build iPhone IPA for local signing
-        run: |
-          xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/device CODE_SIGNING_ALLOWED=NO build
-          python3 scripts/package-ipa.py build/device/Build/Products/Release-iphoneos/NearDrop.app build/NearDrop-unsigned.ipa
-      - uses: actions/upload-artifact@v4
-        with:
-          name: NearDrop-iPhone-unsigned
-          path: build/NearDrop-unsigned.ipa
-          retention-days: 3
       - uses: actions/upload-artifact@v4
         with:
           name: iPhone-screenshots
@@ -73,4 +66,18 @@ jobs:
           name: iPhone-test-results
           path: build/TestResults.xcresult
           if-no-files-found: ignore
+          retention-days: 3
+  iphone-device:
+    runs-on: macos-26
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build iPhone IPA for local signing
+        run: |
+          xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/device CODE_SIGNING_ALLOWED=NO build
+          python3 scripts/package-ipa.py build/device/Build/Products/Release-iphoneos/NearDrop.app build/NearDrop-unsigned.ipa
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NearDrop-iPhone-unsigned
+          path: build/NearDrop-unsigned.ipa
           retention-days: 3

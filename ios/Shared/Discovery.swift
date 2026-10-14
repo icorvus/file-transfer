@@ -91,7 +91,7 @@ extension Discovery: @preconcurrency NetServiceBrowserDelegate, @preconcurrency 
                 guard socket.pointee.sa_family == sa_family_t(AF_INET) else { return nil }
                 var output = [CChar](repeating: 0, count: Int(NI_MAXHOST))
                 guard getnameinfo(socket, socklen_t(buffer.count), &output, socklen_t(output.count), nil, 0, NI_NUMERICHOST) == 0 else { return nil }
-                return String(cString: output)
+                return String(decoding: output.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self)
             }
             if let host, PairingCode.isPrivateIPv4(host), found.count < 8,
                !found.contains(where: { $0.0 == host && $0.1 == sender.port }) {
