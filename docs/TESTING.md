@@ -8,7 +8,9 @@ Run `make test`. Linux cannot build UIKit/SwiftUI or run an iPhone simulator. An
 
 ## Cloud build evidence
 
-The [cloud run for commit 97bb7d6](https://github.com/icorvus/file-transfer/actions/runs/38590366758) successfully built the iPhone app and Share extension with Xcode 26.6 for both Simulator and device. Its device artifact includes the main app and `NearDropShare.appex`, targeting iOS 26. The downloaded IPA has SHA-256 `9e0885043cb390719bab13229dac0d9f4a6500c64a37375801edb1819c8fcac1` and requires local Apple signing. The same run passed Go race tests and vet. Simulator test execution and screenshots are still pending; compilation alone does not prove either.
+The [cloud run for commit 97bb7d6](https://github.com/icorvus/file-transfer/actions/runs/38590366758) successfully built the iPhone app and Share extension with Xcode 26.6 for both Simulator and device. Its device artifact includes the main app and `NearDropShare.appex`, targeting iOS 26. The downloaded IPA has SHA-256 `9e0885043cb390719bab13229dac0d9f4a6500c64a37375801edb1819c8fcac1` and requires local Apple signing. The same run passed Go race tests and vet, and all five Swift tests (including seven parameterized non-LAN host cases).
+
+Native screenshots were captured and inspected in light appearance and dark appearance with accessibility extra-large text. They revealed Keychain error -34018 because simulator code signing had been disabled. CI now uses a local ad-hoc simulator signature and includes a real Keychain save/load/remove test; its result remains pending. Device IPAs still require local Apple signing with iloader. The first simulator boot took 7 minutes 38 seconds, mainly data migration, so its separate boot timeout allows 15 minutes.
 
 The installed Ubuntu user service was verified active, using `~/Pictures/NearDrop`, and its Bonjour advertisement was resolved from the LAN. The control page was inspected in a real browser at desktop and narrow widths, including QR generation, with no horizontal overflow at the narrow size.
 

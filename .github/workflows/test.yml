@@ -26,15 +26,16 @@ jobs:
           retention-days: 3
   iphone:
     runs-on: macos-26
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - run: xcodebuild -version
       - name: Build iPhone app and Share extension
-        run: xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/simulator CODE_SIGNING_ALLOWED=NO build
+        run: xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/simulator CODE_SIGN_IDENTITY=- build
       - name: Boot iPhone simulator
         id: simulator
-        timeout-minutes: 5
+        # Fresh hosted simulators may spend several minutes migrating data.
+        timeout-minutes: 15
         shell: bash
         run: |
           device=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; d=json.load(sys.stdin); print(next(x["udid"] for runtime,items in d["devices"].items() if "iOS-26" in runtime for x in items if "iPhone" in x["name"]))')
@@ -43,7 +44,7 @@ jobs:
           xcrun simctl bootstatus "$device" -b
       - name: Run Swift tests
         timeout-minutes: 8
-        run: xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -destination "platform=iOS Simulator,id=$NEARDROP_SIMULATOR_UDID" -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -derivedDataPath build/simulator -resultBundlePath build/TestResults.xcresult CODE_SIGNING_ALLOWED=NO test
+        run: xcodebuild -project ios/NearDrop.xcodeproj -scheme NearDrop -destination "platform=iOS Simulator,id=$NEARDROP_SIMULATOR_UDID" -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 -derivedDataPath build/simulator -resultBundlePath build/TestResults.xcresult CODE_SIGN_IDENTITY=- test
       - name: Capture native iPhone screens
         if: always() && steps.simulator.outcome == 'success'
         timeout-minutes: 3

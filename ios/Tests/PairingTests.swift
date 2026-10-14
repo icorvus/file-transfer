@@ -34,4 +34,24 @@ struct PairingTests {
         #expect(hash == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
         #expect(size == 3)
     }
+
+    @Test func pairingKeychainRoundTrip() throws {
+        // Exercise the actual entitlement and persistence path, not a mock.
+        // Preserve an existing pairing if these tests run on a used simulator.
+        let previous = try PairingStore.load()
+        defer {
+            if let previous { try? PairingStore.save(previous) }
+            else { try? PairingStore.remove() }
+        }
+        var computer = try PairingCode(valid).computer
+        computer.token = String(repeating: "d", count: 64)
+        computer.deviceId = String(repeating: "e", count: 32)
+        try PairingStore.save(computer)
+        let loaded = try PairingStore.load()
+        #expect(loaded?.id == computer.id)
+        #expect(loaded?.token == computer.token)
+        #expect(loaded?.deviceId == computer.deviceId)
+        try PairingStore.remove()
+        #expect(try PairingStore.load() == nil)
+    }
 }

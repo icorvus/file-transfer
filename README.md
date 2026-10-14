@@ -2,7 +2,7 @@
 
 Send photos from an iPhone's **Photos → Share → NearDrop** straight to an Ubuntu PC on the same local network. The iPhone app and Share extension are Swift; the receiver is Go. No cloud server is involved.
 
-**Status:** the Go receiver is built and tested on Ubuntu. The Swift app and Share extension compile with Xcode 26.6 on GitHub's macOS runner, and the iPhone device IPA has been built. Simulator runtime checks and real iPhone installation/transfer tests remain pending. See [docs/TESTING.md](docs/TESTING.md).
+**Status:** the Go receiver is built and tested on Ubuntu. The Swift app and Share extension compile with Xcode 26.6 on GitHub's macOS runner, the iPhone device IPA has been built, and the initial five Swift tests passed in an iPhone simulator. Shared Keychain verification and real iPhone installation/transfer tests remain pending. See [docs/TESTING.md](docs/TESTING.md).
 
 ## Start on the PC
 
