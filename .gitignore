@@ -11,3 +11,5 @@ ios/DerivedData/
 *.p8
 *.mobileprovision
 *.ipa
+__pycache__/
+*.pyc

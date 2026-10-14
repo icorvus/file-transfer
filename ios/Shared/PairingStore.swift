@@ -1,19 +1,38 @@
 import Foundation
 import Security
 
-// Both targets use the same explicitly configured Keychain access group. This
-// avoids a plaintext token in UserDefaults and does not need an App Group.
+// Xcode installs share an explicit keychain group. iloader re-signs bundle IDs
+// and replaces entitlements, but gives the app and all extensions one App Group
+// named group.<resigned main bundle ID>. App Groups are also keychain groups.
+// Resolve that signed group at runtime so cloud builds need no Apple identity.
 nonisolated enum PairingStore {
-    private static var query: [String: Any] {
+    private static var accessGroup: String {
         get throws {
+            var containingApp = Bundle.main
+            if Bundle.main.bundleURL.pathExtension == "appex",
+               let bundle = Bundle(url: Bundle.main.bundleURL.deletingLastPathComponent().deletingLastPathComponent()) {
+                containingApp = bundle
+            }
+            if let identifier = containingApp.bundleIdentifier {
+                let sideloadGroup = "group." + identifier
+                if FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: sideloadGroup) != nil {
+                    return sideloadGroup
+                }
+            }
             guard let group = Bundle.main.object(forInfoDictionaryKey: "NearDropKeychainGroup") as? String,
                   !group.isEmpty, !group.contains("$(") else {
-                throw NearDropError.message("Set your Apple signing team in Xcode before installing NearDrop.")
+                throw NearDropError.message("The app and Share extension must be signed together. Install the complete NearDrop IPA, keeping its Share extension.")
             }
+            return group
+        }
+    }
+
+    private static var query: [String: Any] {
+        get throws {
             return [kSecClass as String: kSecClassGenericPassword,
                     kSecAttrService as String: "NearDrop.PairedComputer.v1",
                     kSecAttrAccount as String: "receiver",
-                    kSecAttrAccessGroup as String: group]
+                    kSecAttrAccessGroup as String: try accessGroup]
         }
     }
 

@@ -12,7 +12,7 @@ The loopback control page generates a one-use 256-bit random secret, valid for 1
 neardrop://pair?v=1&host=192.168.1.11&port=8787&id=<32 hex>&name=<encoded name>&fp=<64 hex>&code=<64 hex>
 ```
 
-`POST /v1/pair`, JSON `{ "name": "My iPhone", "code": "..." }`, returns `{ "id", "name", "deviceId", "token", "maxBytes" }`. The secret is compared in constant time. Only hashes of device bearer tokens are stored on the PC. The phone saves its receiver, pin, and token as one item in a shared Keychain access group, accessible after first unlock on this device only.
+`POST /v1/pair`, JSON `{ "name": "My iPhone", "code": "..." }`, returns `{ "id", "name", "deviceId", "token", "maxBytes" }`. The secret is compared in constant time. Only hashes of device bearer tokens are stored on the PC. The phone saves its receiver, pin, and token as one item in a shared Keychain access group, accessible after first unlock on this device only. For iloader-signed builds, the shared App Group created by the signer serves as this Keychain group; the installed main bundle ID is resolved at runtime.
 
 Use the displayed QR as a secret: anyone who obtains an unused code can pair during its lifetime. The control page is not exposed to the network. It validates Host and Origin and requires JSON on mutations, with no permissive CORS policy. Local programs running as the same OS user are inside the trust boundary.
 

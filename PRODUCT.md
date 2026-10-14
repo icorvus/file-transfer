@@ -18,7 +18,7 @@ Select photos in Photos, choose the app in the share sheet, and save the photos 
 Both devices must be on a mutually reachable local network. The receiver runs on this PC. No cloud service or account is needed for transfers.
 
 ## Capabilities and Constraints
-One-time QR pairing, remembered receiver, Bonjour discovery, encrypted uploads, byte-preserving file handling, explicit progress and completion, no overwrites. The working name NearDrop and default destination ~/Pictures/NearDrop are implementation defaults. Compile Swift on a hosted macOS runner. Free signing and installation from the Ubuntu PC are being prepared; no Apple account credentials belong in source or cloud build logs.
+One-time QR pairing, remembered receiver, Bonjour discovery, encrypted uploads, byte-preserving file handling, explicit progress and completion, no overwrites. The working name NearDrop and default destination ~/Pictures/NearDrop are implementation defaults. Compile Swift on a hosted macOS runner. The user selected a public GitHub repository for free standard runners. Free signing and installation from the Ubuntu PC are being prepared; no Apple account credentials belong in source or cloud build logs.
 
 ## Product Principles
 - The share sheet is the primary workflow.

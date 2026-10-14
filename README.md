@@ -46,7 +46,13 @@ ExecStart=%h/.local/bin/neardrop --out %h/Pictures/iPhone
 
 Then `systemctl --user daemon-reload && systemctl --user restart neardrop`.
 
-## Install on iPhone using the MacBook
+## Install on iPhone without a Mac
+
+Use the [cloud build and Ubuntu installation guide](docs/CLOUD-INSTALL.md). GitHub compiles the app on a macOS runner; iloader signs the resulting IPA locally with a free Apple account and installs it over USB. The Share extension is included. Free signing requires renewal every seven days.
+
+The public source repository is [icorvus/file-transfer](https://github.com/icorvus/file-transfer). Builds are started manually from its Actions tab. No Apple signing credentials are uploaded to the cloud build.
+
+## Optional development install using your own Mac
 
 1. Install **Xcode 26 or newer**, open it once, and install the iOS platform support. The iPhone must run **iOS 26 or newer**.
 2. Copy this repository to your Mac, or run `make package` on the PC and copy **bin/NearDrop-iPhone.zip** to the Mac. Unzip it.
