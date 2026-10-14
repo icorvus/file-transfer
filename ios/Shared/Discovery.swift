@@ -9,12 +9,12 @@ import Darwin
     private var browser: NetServiceBrowser?
     private var services: [NetService] = []
     private var wantedID: String?
-    private var found: (String, Int)?
+    private var found: [(String, Int)] = []
 
     func start(id: String) {
         stop()
         wantedID = id
-        found = nil
+        found = []
         message = nil
         let browser = NetServiceBrowser()
         browser.delegate = self
@@ -34,18 +34,30 @@ import Darwin
     func locate(_ computer: PairedComputer) async throws -> PairedComputer {
         start(id: computer.id)
         defer { stop() }
-        // Bonjour handles DHCP changes. Fall back to the last working address
-        // when multicast is blocked; the pinned certificate checks identity.
+        // A Linux PC may announce Docker and Wi-Fi addresses together. Prefer
+        // the saved address, then try resolved candidates with certificate
+        // pinning; a matching Bonjour TXT record alone never proves identity.
         for _ in 0..<15 {
             try await Task.sleep(for: .milliseconds(200))
-            if let (host, port) = found {
-                var updated = computer
-                updated.host = host
-                updated.port = port
+            if !found.isEmpty { break }
+        }
+        let candidates = [(computer.host, computer.port)] + found.filter { $0.0 != computer.host || $0.1 != computer.port }
+        stop()
+        var failure: (any Error)?
+        for (host, port) in candidates.prefix(8) {
+            try Task.checkCancellation()
+            var updated = computer
+            updated.host = host
+            updated.port = port
+            do {
+                _ = try await TransferClient(computer: updated).status()
                 return updated
+            } catch {
+                if case NearDropError.server(401, _) = error { throw error }
+                failure = error
             }
         }
-        return computer
+        throw failure ?? NearDropError.message("Couldn’t find your PC. Keep NearDrop running and connect both devices to the same network.")
     }
 }
 
@@ -81,7 +93,10 @@ extension Discovery: @preconcurrency NetServiceBrowserDelegate, @preconcurrency 
                 guard getnameinfo(socket, socklen_t(buffer.count), &output, socklen_t(output.count), nil, 0, NI_NUMERICHOST) == 0 else { return nil }
                 return String(cString: output)
             }
-            if let host, PairingCode.isPrivateIPv4(host) { found = (host, sender.port); return }
+            if let host, PairingCode.isPrivateIPv4(host), found.count < 8,
+               !found.contains(where: { $0.0 == host && $0.1 == sender.port }) {
+                found.append((host, sender.port))
+            }
         }
     }
 }
