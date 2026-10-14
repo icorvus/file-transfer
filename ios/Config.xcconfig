@@ -1,0 +1,6 @@
+// In Xcode: select the NearDrop project, Signing & Capabilities, and choose
+// your team for BOTH targets. Use a unique reverse-DNS bundle prefix.
+NEARDROP_BUNDLE_PREFIX = com.wiktor.neardrop
+NEARDROP_KEYCHAIN_GROUP = $(AppIdentifierPrefix)$(NEARDROP_BUNDLE_PREFIX).shared
+// Optional local overrides (not committed): DEVELOPMENT_TEAM = ABC1234567
+#include? "Local.xcconfig"

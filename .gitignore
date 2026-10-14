@@ -1,0 +1,13 @@
+/bin/
+/build/
+/.local/
+/.impeccable/cache/
+ios/Local.xcconfig
+ios/*.xcodeproj/xcuserdata/
+ios/DerivedData/
+.DS_Store
+*.xcuserstate
+*.p12
+*.p8
+*.mobileprovision
+*.ipa

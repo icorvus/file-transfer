@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleDisplayName</key><string>NearDrop</string>
+  <key>CFBundleIdentifier</key><string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+  <key>CFBundleName</key><string>$(PRODUCT_NAME)</string>
+  <key>CFBundleExecutable</key><string>$(EXECUTABLE_NAME)</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>1.0</string>
+  <key>CFBundleVersion</key><string>1</string>
+  <key>LSRequiresIPhoneOS</key><true/>
+  <key>UILaunchScreen</key><dict/>
+  <key>UIApplicationSceneManifest</key><dict><key>UIApplicationSupportsMultipleScenes</key><false/></dict>
+  <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
+  <key>NSLocalNetworkUsageDescription</key><string>NearDrop finds your paired PC and sends your selected photos directly over your local network.</string>
+  <key>NSBonjourServices</key><array><string>_neardrop._tcp</string></array>
+  <key>NSCameraUsageDescription</key><string>Scan the pairing QR code displayed on your PC.</string>
+  <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
+  <key>NearDropKeychainGroup</key><string>$(NEARDROP_KEYCHAIN_GROUP)</string>
+  <key>CFBundleURLTypes</key><array><dict><key>CFBundleURLName</key><string>NearDrop pairing</string><key>CFBundleURLSchemes</key><array><string>neardrop</string></array></dict></array>
+</dict></plist>

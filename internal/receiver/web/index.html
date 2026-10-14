@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>NearDrop · This computer</title>
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+<main>
+  <header><div class="wordmark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 21v5h20v-5M16 4v15m-6-6 6 6 6-6"/></svg>NearDrop</div><span id="connection" role="status">Connecting…</span></header>
+  <section class="intro"><h1>Your photos.<br>Right here.</h1><p>Share from your iPhone. Save straight to <strong id="computer">this computer</strong>.</p></section>
+  <div id="error" class="error" role="alert" hidden></div>
+  <section class="destination"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7V5h6l2 2h10v13H3z"/></svg><div><h2>Saving to</h2><p id="folder">Loading destination…</p></div></section>
+  <div class="workspace">
+    <section class="pairing"><h2>Connect your iPhone</h2><p>Open NearDrop on your iPhone and scan this code. You only need to pair once.</p>
+      <label for="address">This PC’s Wi-Fi or Ethernet address</label><select id="address"></select>
+      <button id="pair" type="button">Pair an iPhone</button>
+      <div id="pairing-details" hidden><img id="qr" width="288" height="288" alt="Pairing QR code for the NearDrop iPhone app"><p id="expiry"></p><details><summary>Can’t scan the code?</summary><p>Copy this pairing link into NearDrop on your iPhone. Keep it private.</p><textarea id="pairing-link" readonly aria-label="Pairing link" rows="4"></textarea><button id="copy" class="secondary" type="button">Copy pairing link</button></details></div>
+      <p class="hint">Both devices need to be on the same local network. Transfers stay between your devices.</p>
+    </section>
+    <section class="activity"><h2>Paired iPhones</h2><ul id="devices"><li class="empty">No iPhone paired yet.</li></ul><h2 class="recent-heading">Recent arrivals</h2><p class="hint">Files received since the receiver started.</p><ul id="recent"><li class="empty">Photos you send will appear here.</li></ul></section>
+  </div>
+  <footer>In Photos, select photos → Share → NearDrop.<br>Add NearDrop to your share sheet favorites for quicker access.</footer>
+</main>
+</body></html>
